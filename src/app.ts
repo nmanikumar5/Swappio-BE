@@ -1,0 +1,128 @@
+import express, { Application } from 'express';
+import http from 'http';
+import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
+import { config } from './config/env';
+import { connectDatabase } from './config/database';
+import { initializeSocket } from './config/socket';
+import { errorHandler } from './middleware/error';
+
+// Import routes
+import authRoutes from './routes/authRoutes';
+import listingRoutes from './routes/listingRoutes';
+import favoriteRoutes from './routes/favoriteRoutes';
+import reportRoutes from './routes/reportRoutes';
+import messageRoutes from './routes/messageRoutes';
+import adminRoutes from './routes/adminRoutes';
+import uploadRoutes from './routes/uploadRoutes';
+
+// Initialize express app
+const app: Application = express();
+
+// Create HTTP server
+const httpServer = http.createServer(app);
+
+// Initialize Socket.io
+const io = initializeSocket(httpServer);
+
+// Make io accessible to routes
+app.set('io', io);
+
+// Security middleware
+app.use(helmet());
+app.use(cors({
+  origin: config.corsOrigin,
+  credentials: true,
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: config.rateLimit.windowMs,
+  max: config.rateLimit.maxRequests,
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api', limiter);
+
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Compression middleware
+app.use(compression());
+
+// Health check route
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/listings', listingRoutes);
+app.use('/api/favorites', favoriteRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/upload', uploadRoutes);
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found',
+  });
+});
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
+
+// Start server
+const startServer = async () => {
+  try {
+    // Connect to database
+    await connectDatabase();
+
+    // Start listening
+    httpServer.listen(config.port, () => {
+      console.log(`
+╔════════════════════════════════════════╗
+║                                        ║
+║   🚀 Swappio Backend Server Started   ║
+║                                        ║
+║   Environment: ${config.nodeEnv.padEnd(24)} ║
+║   Port: ${String(config.port).padEnd(31)} ║
+║   Database: Connected ✅               ║
+║   Socket.io: Enabled ✅                ║
+║                                        ║
+╚════════════════════════════════════════╝
+      `);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err: Error) => {
+  console.error('Unhandled Promise Rejection:', err);
+  httpServer.close(() => process.exit(1));
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err: Error) => {
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
+});
+
+// Start the server
+startServer();
+
+export default app;
