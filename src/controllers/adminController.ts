@@ -5,6 +5,7 @@ import Report from '../models/Report';
 import { asyncHandler } from '../utils/asyncHandler';
 import { sendSuccess } from '../utils/response';
 import { NotFoundError } from '../utils/errors';
+import { createSafeRegex, sanitizeString } from '../utils/sanitize';
 
 // @desc    Get all users (Admin)
 // @route   GET /api/admin/users
@@ -14,12 +15,13 @@ export const getUsers = asyncHandler(async (req: Request, res: Response) => {
 
   const query: any = {};
   if (search) {
+    const sanitizedSearch = sanitizeString(search as string);
     query.$or = [
-      { name: new RegExp(search as string, 'i') },
-      { email: new RegExp(search as string, 'i') },
+      { name: createSafeRegex(sanitizedSearch) },
+      { email: createSafeRegex(sanitizedSearch) },
     ];
   }
-  if (role) query.role = role;
+  if (role) query.role = sanitizeString(role as string);
 
   const pageNum = Number(page);
   const limitNum = Number(limit);
@@ -84,7 +86,7 @@ export const getAllListings = asyncHandler(async (req: Request, res: Response) =
   const { page = 1, limit = 20, status } = req.query;
 
   const query: any = {};
-  if (status) query.status = status;
+  if (status) query.status = sanitizeString(status as string);
 
   const pageNum = Number(page);
   const limitNum = Number(limit);

@@ -4,6 +4,7 @@ import Listing from '../models/Listing';
 import { asyncHandler } from '../utils/asyncHandler';
 import { sendSuccess } from '../utils/response';
 import { NotFoundError, ForbiddenError, ValidationError } from '../utils/errors';
+import { createSafeRegex, sanitizeString } from '../utils/sanitize';
 
 // Validation schemas
 export const createListingSchema = z.object({
@@ -68,10 +69,10 @@ export const getListings = asyncHandler(async (req: Request, res: Response) => {
   } = req.query;
 
   // Build query
-  const query: any = { status };
+  const query: any = { status: sanitizeString(status as string) };
 
-  if (category) query.category = category;
-  if (location) query.location = new RegExp(location as string, 'i');
+  if (category) query.category = sanitizeString(category as string);
+  if (location) query.location = createSafeRegex(sanitizeString(location as string));
   
   if (minPrice || maxPrice) {
     query.price = {};
@@ -80,7 +81,7 @@ export const getListings = asyncHandler(async (req: Request, res: Response) => {
   }
 
   if (keyword) {
-    query.$text = { $search: keyword as string };
+    query.$text = { $search: sanitizeString(keyword as string) };
   }
 
   // Pagination

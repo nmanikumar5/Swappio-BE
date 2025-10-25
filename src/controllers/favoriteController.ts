@@ -5,6 +5,7 @@ import Listing from '../models/Listing';
 import { asyncHandler } from '../utils/asyncHandler';
 import { sendSuccess } from '../utils/response';
 import { ForbiddenError, NotFoundError, ValidationError } from '../utils/errors';
+import { sanitizeString } from '../utils/sanitize';
 
 // Validation schemas
 export const addFavoriteSchema = z.object({
@@ -21,9 +22,10 @@ export const addFavorite = asyncHandler(async (req: Request, res: Response) => {
   if (!user) throw new ForbiddenError('User not authenticated');
 
   const { listingId } = req.body;
+  const sanitizedListingId = sanitizeString(listingId);
 
   // Check if listing exists
-  const listing = await Listing.findById(listingId);
+  const listing = await Listing.findById(sanitizedListingId);
   if (!listing) {
     throw new NotFoundError('Listing not found');
   }
@@ -31,7 +33,7 @@ export const addFavorite = asyncHandler(async (req: Request, res: Response) => {
   // Check if already favorited
   const existingFavorite = await Favorite.findOne({
     userId: user._id,
-    listingId,
+    listingId: sanitizedListingId,
   });
 
   if (existingFavorite) {
@@ -40,7 +42,7 @@ export const addFavorite = asyncHandler(async (req: Request, res: Response) => {
 
   const favorite = await Favorite.create({
     userId: user._id,
-    listingId,
+    listingId: sanitizedListingId,
   });
 
   sendSuccess(res, 201, { favorite }, 'Added to favorites');

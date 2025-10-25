@@ -5,6 +5,7 @@ import Listing from '../models/Listing';
 import { asyncHandler } from '../utils/asyncHandler';
 import { sendSuccess } from '../utils/response';
 import { ForbiddenError, NotFoundError } from '../utils/errors';
+import { sanitizeString } from '../utils/sanitize';
 
 // Validation schemas
 export const createReportSchema = z.object({
@@ -22,15 +23,16 @@ export const createReport = asyncHandler(async (req: Request, res: Response) => 
   if (!user) throw new ForbiddenError('User not authenticated');
 
   const { listingId, reason } = req.body;
+  const sanitizedListingId = sanitizeString(listingId);
 
   // Check if listing exists
-  const listing = await Listing.findById(listingId);
+  const listing = await Listing.findById(sanitizedListingId);
   if (!listing) {
     throw new NotFoundError('Listing not found');
   }
 
   const report = await Report.create({
-    listingId,
+    listingId: sanitizedListingId,
     reportedBy: user._id,
     reason,
   });
@@ -45,7 +47,7 @@ export const getReports = asyncHandler(async (req: Request, res: Response) => {
   const { status, page = 1, limit = 20 } = req.query;
 
   const query: any = {};
-  if (status) query.status = status;
+  if (status) query.status = sanitizeString(status as string);
 
   const pageNum = Number(page);
   const limitNum = Number(limit);

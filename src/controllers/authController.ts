@@ -5,6 +5,7 @@ import { TokenService } from '../services/tokenService';
 import { asyncHandler } from '../utils/asyncHandler';
 import { sendSuccess } from '../utils/response';
 import { ValidationError, UnauthorizedError, NotFoundError } from '../utils/errors';
+import { sanitizeString } from '../utils/sanitize';
 
 // Validation schemas
 export const registerSchema = z.object({
@@ -40,7 +41,7 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password, phone, location } = req.body;
 
   // Check if user already exists
-  const existingUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email: sanitizeString(email) });
   if (existingUser) {
     throw new ValidationError('User with this email already exists');
   }
@@ -78,7 +79,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   // Find user with password
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email: sanitizeString(email) }).select('+password');
   
   if (!user) {
     throw new UnauthorizedError('Invalid email or password');
