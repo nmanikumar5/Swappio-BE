@@ -1,6 +1,9 @@
 import dotenv from 'dotenv';
 
-dotenv.config();
+// In development it's convenient to let the .env file override any existing
+// environment variables so local .env values are authoritative. This should
+// NOT be enabled in production unless you intentionally want .env to win.
+dotenv.config({ override: true });
 
 export const config = {
   port: process.env.PORT || 5000,
