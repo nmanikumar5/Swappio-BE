@@ -25,6 +25,19 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
     .populate('senderId', 'name photo')
     .populate('receiverId', 'name photo');
 
+  try {
+    // Log the persisted message shape for debugging (stringify to avoid circulars)
+    const plain = populatedMessage && typeof (populatedMessage as any).toObject === 'function'
+      ? (populatedMessage as any).toObject()
+      : populatedMessage;
+    // Keep logging concise
+    // eslint-disable-next-line no-console
+    console.log('[DEBUG] sendMessage persisted:', JSON.stringify(plain, null, 2));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('[DEBUG] sendMessage logging failed', e);
+  }
+
   sendSuccess(res, 201, { message: populatedMessage }, 'Message sent');
 });
 
@@ -36,12 +49,14 @@ export const getConversations = asyncHandler(async (req: Request, res: Response)
   if (!user) throw new ForbiddenError('User not authenticated');
 
   // Get unique conversations
+  const userObjectId = new mongoose.Types.ObjectId(user._id.toString());
+
   const conversations = await Message.aggregate([
     {
       $match: {
         $or: [
-          { senderId: new mongoose.Types.ObjectId(user._id.toString()) },
-          { receiverId: new mongoose.Types.ObjectId(user._id.toString()) },
+          { senderId: userObjectId },
+          { receiverId: userObjectId },
         ],
       },
     },
@@ -52,7 +67,7 @@ export const getConversations = asyncHandler(async (req: Request, res: Response)
       $group: {
         _id: {
           $cond: [
-            { $eq: ['$senderId', new mongoose.Types.ObjectId(user._id.toString())] },
+            { $eq: ['$senderId', userObjectId] },
             '$receiverId',
             '$senderId',
           ],
@@ -79,21 +94,38 @@ export const getConversations = asyncHandler(async (req: Request, res: Response)
         as: 'receiver',
       },
     },
+    // populate listing details (if any)
     {
-      $unwind: '$sender',
+      $lookup: {
+        from: 'listings',
+        localField: 'listingId',
+        foreignField: '_id',
+        as: 'listing',
+      },
     },
-    {
-      $unwind: '$receiver',
-    },
+    { $unwind: '$sender' },
+    { $unwind: '$receiver' },
+    { $unwind: { path: '$listing', preserveNullAndEmptyArrays: true } },
     {
       $project: {
         'sender.password': 0,
+        'sender.passwordHash': 0,
         'receiver.password': 0,
+        'receiver.passwordHash': 0,
       },
     },
   ]);
 
-  sendSuccess(res, 200, { conversations });
+  sendSuccess(res, 200, {
+    conversations: conversations.map(c => ({
+      // _id: c._id,
+      id: c._id,
+      sender: c.sender,
+      receiver: c.receiver,
+      text: c.text,
+      createdAt: c.createdAt,
+    }))
+  });
 });
 
 // @desc    Get messages between two users
@@ -118,9 +150,13 @@ export const getMessages = asyncHandler(async (req: Request, res: Response) => {
   })
     .populate('senderId', 'name photo')
     .populate('receiverId', 'name photo')
-    .sort('createdAt')
+    // fetch newest messages first so page=1 returns the latest
+    .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limitNum);
+
+  // messages currently come back newest->oldest; reverse to send oldest->newest
+  const orderedMessages = messages.slice().reverse();
 
   // Mark messages as read
   await Message.updateMany(
@@ -136,7 +172,7 @@ export const getMessages = asyncHandler(async (req: Request, res: Response) => {
   });
 
   sendSuccess(res, 200, {
-    messages,
+    messages: orderedMessages,
     pagination: {
       page: pageNum,
       limit: limitNum,

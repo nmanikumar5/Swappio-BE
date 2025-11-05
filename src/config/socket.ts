@@ -19,9 +19,15 @@ export const initializeSocket = (httpServer: HTTPServer) => {
 
   // Authentication middleware
   io.use((socket: AuthenticatedSocket, next) => {
-    const token = socket.handshake.auth.token;
+    const token = socket.handshake.auth?.token;
+
+    // Log handshake info for debugging (avoid logging token itself)
+    // eslint-disable-next-line no-console
+    // console.log(`[SOCKET] handshake auth keys: ${Object.keys(socket.handshake.auth || {}).join(',')}`);
 
     if (!token) {
+      // eslint-disable-next-line no-console
+      // console.error('[SOCKET] Authentication error: No token provided in handshake for socket id', socket.id);
       return next(new Error('Authentication error: No token provided'));
     }
 
@@ -30,6 +36,8 @@ export const initializeSocket = (httpServer: HTTPServer) => {
       socket.userId = decoded.id;
       next();
     } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('[SOCKET] Authentication error: Invalid token for socket id', socket.id, String((error as any)?.message || error));
       next(new Error('Authentication error: Invalid token'));
     }
   });
@@ -63,11 +71,39 @@ export const initializeSocket = (httpServer: HTTPServer) => {
           .populate('senderId', 'name photo')
           .populate('receiverId', 'name photo');
 
-        // Emit to receiver
-        io.to(data.receiverId).emit('receive_message', populatedMessage);
+        // Check if receiver is currently connected (in their room)
+        try {
+          const sockets = await io.in(data.receiverId).fetchSockets();
+          if (sockets && sockets.length > 0) {
+            // mark as delivered
+            message.isDelivered = true as any;
+            message.deliveredAt = new Date();
+            await message.save();
+            // re-populate with delivered flag
+            const deliveredPopulated = await Message.findById(message._id)
+              .populate('senderId', 'name photo')
+              .populate('receiverId', 'name photo');
+            // Emit to receiver
+            io.to(data.receiverId).emit('receive_message', deliveredPopulated);
 
-        // Emit back to sender for confirmation
-        socket.emit('message_sent', populatedMessage);
+            // Notify sender that message was delivered
+            io.to(socket.userId as string).emit('message_delivered', {
+              messageId: String(message._id),
+              deliveredAt: message.deliveredAt?.toISOString(),
+            });
+
+            // Emit back to sender for confirmation (with delivered flag)
+            socket.emit('message_sent', deliveredPopulated);
+          } else {
+            // receiver not connected yet: emit normally
+            io.to(data.receiverId).emit('receive_message', populatedMessage);
+            socket.emit('message_sent', populatedMessage);
+          }
+        } catch (err) {
+          // fallback: just emit as-is
+          io.to(data.receiverId).emit('receive_message', populatedMessage);
+          socket.emit('message_sent', populatedMessage);
+        }
       } catch (error) {
         console.error('Error sending message:', error);
         socket.emit('message_error', { message: 'Failed to send message' });

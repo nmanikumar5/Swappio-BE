@@ -6,6 +6,8 @@ export interface IMessage extends Document {
   text: string;
   listingId?: mongoose.Types.ObjectId;
   isRead: boolean;
+  isDelivered?: boolean;
+  deliveredAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,6 +37,13 @@ const messageSchema = new Schema<IMessage>(
     isRead: {
       type: Boolean,
       default: false,
+    },
+    isDelivered: {
+      type: Boolean,
+      default: false,
+    },
+    deliveredAt: {
+      type: Date,
     },
   },
   {

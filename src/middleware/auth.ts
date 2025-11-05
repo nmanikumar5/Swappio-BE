@@ -20,22 +20,40 @@ interface JwtPayload {
 
 export const authenticate = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    // Get token from header
+    // Prefer Authorization header: Bearer <token>
     const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedError('No token provided');
+    let token: string | undefined;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    } else {
+      // Friendly message for missing header
+      // Allow cookie fallback only for server-side rendered requests which set `X-SSR: 1` header.
+      const isSSR = req.headers['x-ssr'] === '1' || req.headers['x-ssr'] === 'true';
+      if (isSSR) {
+        // attempt to read cookie named swappio_token
+        if ((req as any).cookies && (req as any).cookies.swappio_token) {
+          token = (req as any).cookies.swappio_token;
+        } else if (req.headers.cookie) {
+          const cookieHeader = req.headers.cookie as string;
+          const match = cookieHeader.split(';').map(c => c.trim()).find(c => c.startsWith('swappio_token='));
+          if (match) token = match.substring('swappio_token='.length);
+        }
+      } else {
+        throw new UnauthorizedError('Missing Authorization header. Include Authorization: Bearer <token> in requests.');
+      }
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer '
-
     try {
+      if (!token) {
+        throw new UnauthorizedError('Missing token after parsing.');
+      }
       // Verify token
-      const decoded = jwt.verify(token, config.jwtSecret) as JwtPayload;
+      const decoded = jwt.verify(token, config.jwtSecret) as unknown as JwtPayload;
 
       // Get user from token
       const user = await User.findById(decoded.id).select('-password');
-      
+
       if (!user) {
         throw new UnauthorizedError('User not found');
       }

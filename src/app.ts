@@ -15,8 +15,19 @@ import listingRoutes from './routes/listingRoutes';
 import favoriteRoutes from './routes/favoriteRoutes';
 import reportRoutes from './routes/reportRoutes';
 import messageRoutes from './routes/messageRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 import adminRoutes from './routes/adminRoutes';
 import uploadRoutes from './routes/uploadRoutes';
+import olaRoutes from './routes/olaRoutes';
+import mapboxRoutes from './routes/mapboxRoutes';
+import ratingRoutes from './routes/ratingRoutes';
+import paymentRoutes from './routes/paymentRoutes';
+import categoryRoutes from './routes/categoryRoutes';
+import configRoutes from './routes/configRoutes';
+import configPublicRoutes from './routes/configPublicRoutes';
+import footerRoutes from './routes/footerRoutes';
+import pageRoutes from './routes/pageRoutes';
+import contactRoutes from './routes/contactRoutes';
 
 // Initialize express app
 const app: Application = express();
@@ -39,17 +50,21 @@ app.use(cors({
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: config.rateLimit.windowMs,
-  max: config.rateLimit.maxRequests,
+  // windowMs: config.rateLimit.windowMs,
+  // max: config.rateLimit.maxRequests,
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use('/api', limiter);
+// app.use('/api');
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Serve uploaded files for local testing
+import path from 'path';
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Compression middleware
 app.use(compression());
@@ -69,11 +84,23 @@ app.use('/api/listings', listingRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/ola', olaRoutes);
+app.use('/api/mapbox', mapboxRoutes);
+app.use('/api/ratings', ratingRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/config', configPublicRoutes);
+app.use('/api/admin/config', configRoutes);
+app.use('/api/footer', footerRoutes);
+app.use('/api/pages', pageRoutes);
+app.use('/api/contact', contactRoutes);
 
 // 404 handler
-app.use('*', (req, res) => {
+// Use app.use with no path so Express doesn't parse the route string with path-to-regexp
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: 'Route not found',

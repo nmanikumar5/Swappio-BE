@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   createListing,
   getListings,
+  suggestListings,
   getListing,
   updateListing,
   deleteListing,
@@ -15,6 +16,7 @@ import { validate } from '../middleware/validate';
 const router = Router();
 
 router.get('/', getListings);
+router.get('/suggest', suggestListings);
 router.get('/my', authenticate, getMyListings);
 router.get('/:id', getListing);
 router.post('/', authenticate, validate(createListingSchema), createListing);
