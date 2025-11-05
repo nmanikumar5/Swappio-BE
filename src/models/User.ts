@@ -74,6 +74,7 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: [true, 'Email is required'],
       unique: true,
+      sparse: true,
       lowercase: true,
       trim: true,
       match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
@@ -220,6 +221,9 @@ const userSchema = new Schema<IUser>(
   },
   { timestamps: true }
 );
+
+userSchema.index({ email: 1 });
+userSchema.index({ role: 1 });
 
 userSchema.pre('save', async function (this: any, next) {
   try {
