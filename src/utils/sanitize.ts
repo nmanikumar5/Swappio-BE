@@ -7,8 +7,12 @@ import escapeStringRegexp from 'escape-string-regexp';
 export const sanitizeString = (input: string): string => {
   if (typeof input !== 'string') return '';
   // Remove special MongoDB operators and null bytes
-  return input.replace(/[{}$\0]/g, '').trim();
+  return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").trim();
 };
+
+// export function sanitize(str = "") {
+//   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// }
 
 /**
  * Sanitize query object for MongoDB

@@ -1,6 +1,7 @@
 {
   "name": "swappio-be",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend for Swappio - OLX-style online exchange platform",
   "main": "dist/app.js",
   "scripts": {
