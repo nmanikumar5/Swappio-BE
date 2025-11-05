@@ -20,20 +20,38 @@ export const getPublicConfigs = asyncHandler(async (req: Request, res: Response)
         'GOOGLE_CLIENT_ID', // Safe: OAuth client IDs are meant to be public
     ];
 
-    // Only return whitelisted, non-encrypted, active configurations
-    const configs = await AppConfig.find({
-        key: { $in: PUBLIC_CONFIG_KEYS },
-        encrypted: false,
-        isActive: true
-    }).select('key value category description');
+    // Attempt to read from DB; if DB is unreachable, fall back to environment
+    // variables for the safe public keys so the frontend can still function.
+    try {
+        const configs = await AppConfig.find({
+            key: { $in: PUBLIC_CONFIG_KEYS },
+            encrypted: false,
+            isActive: true
+        }).select('key value category description');
 
-    // Transform to key-value pairs for easy frontend consumption
-    const configMap: Record<string, string> = {};
-    configs.forEach((config) => {
-        configMap[config.key] = config.value;
-    });
+        // Transform to key-value pairs for easy frontend consumption
+        const configMap: Record<string, string> = {};
+        configs.forEach((config) => {
+            configMap[config.key] = config.value;
+        });
 
-    sendSuccess(res, 200, { configs: configMap }, 'Public configurations retrieved successfully');
+        return sendSuccess(res, 200, { configs: configMap }, 'Public configurations retrieved successfully');
+    } catch (err) {
+        console.error('Failed to read public configs from DB, falling back to env vars:', err);
+
+        // Build fallback map from environment variables (use empty string if missing)
+        const fallback: Record<string, string> = {};
+        for (const key of PUBLIC_CONFIG_KEYS) {
+            fallback[key] = process.env[key] || '';
+        }
+
+        return sendSuccess(
+            res,
+            200,
+            { configs: fallback, fallback: true },
+            'Public configurations served from environment fallback (DB unavailable)'
+        );
+    }
 });
 
 // @desc    Get all configurations
