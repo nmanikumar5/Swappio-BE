@@ -70,7 +70,6 @@ const CategorySchema: Schema = new Schema(
 );
 
 // Index for fast queries
-CategorySchema.index({ slug: 1 });
 CategorySchema.index({ parentCategory: 1 });
 CategorySchema.index({ isActive: 1, order: 1 });
 

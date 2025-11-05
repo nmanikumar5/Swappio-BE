@@ -19,44 +19,66 @@ export async function runMigration(options?: { force?: boolean }) {
     }
 
     async function createIndexes() {
+        // Helper that only creates the index when an identical key doesn't already exist.
+        async function ensureIndex(collectionName: string, keySpec: any, options: any = {}) {
+            const coll = db.collection(collectionName);
+            try {
+                const existing = await coll.indexes();
+                const keyJson = JSON.stringify(keySpec);
+                const found = existing.some((ix: any) => JSON.stringify(ix.key) === keyJson);
+                if (found) {
+                    // existing index with same key exists; skip creation
+                    return;
+                }
+                await coll.createIndex(keySpec, options);
+            } catch (err: any) {
+                // If index creation fails due to an existing index/name clash, ignore and continue
+                const msg = String(err && err.message || err);
+                if (msg.includes('same name') || msg.includes('already exists') || msg.includes('IndexExists')) {
+                    return;
+                }
+                throw err;
+            }
+        }
+
         // Users
-        await db.collection('users').createIndex({ email: 1 }, { unique: true, sparse: true });
-        await db.collection('users').createIndex({ role: 1 });
+        await ensureIndex('users', { email: 1 }, { unique: true, sparse: true });
+        await ensureIndex('users', { role: 1 });
 
         // Listings
-        await db.collection('listings').createIndex({ ownerId: 1 });
-        await db.collection('listings').createIndex({ category: 1 });
-        await db.collection('listings').createIndex({ location: 1 });
-        await db.collection('listings').createIndex({ price: 1 });
-        await db.collection('listings').createIndex({ status: 1 });
-        await db.collection('listings').createIndex({ approvalStatus: 1 });
-        await db.collection('listings').createIndex({ condition: 1 });
-        await db.collection('listings').createIndex({ views: -1 });
-        await db.collection('listings').createIndex({ title: 'text', description: 'text' });
-        await db.collection('listings').createIndex({ createdAt: -1 });
+        await ensureIndex('listings', { ownerId: 1 });
+        await ensureIndex('listings', { category: 1 });
+        await ensureIndex('listings', { location: 1 });
+        await ensureIndex('listings', { price: 1 });
+        await ensureIndex('listings', { status: 1 });
+        await ensureIndex('listings', { approvalStatus: 1 });
+        await ensureIndex('listings', { condition: 1 });
+        await ensureIndex('listings', { views: -1 });
+        await ensureIndex('listings', { title: 'text', description: 'text' });
+        await ensureIndex('listings', { createdAt: -1 });
 
         // Payments
-        await db.collection('payments').createIndex({ userId: 1 });
-        await db.collection('payments').createIndex({ status: 1 });
-        await db.collection('payments').createIndex({ createdAt: -1 });
+        await ensureIndex('payments', { userId: 1 });
+        await ensureIndex('payments', { status: 1 });
+        await ensureIndex('payments', { createdAt: -1 });
 
         // Reports
-        await db.collection('reports').createIndex({ targetId: 1 });
-        await db.collection('reports').createIndex({ createdAt: -1 });
+        await ensureIndex('reports', { targetId: 1 });
+        await ensureIndex('reports', { createdAt: -1 });
 
         // Categories
-        await db.collection('categories').createIndex({ slug: 1 }, { unique: true, sparse: true });
+        await ensureIndex('categories', { slug: 1 }, { unique: true, sparse: true });
 
         // Messages
-        await db.collection('messages').createIndex({ fromId: 1 });
-        await db.collection('messages').createIndex({ toId: 1 });
-        await db.collection('messages').createIndex({ listingId: 1 });
-        await db.collection('messages').createIndex({ createdAt: -1 });
+        await ensureIndex('messages', { fromId: 1 });
+        await ensureIndex('messages', { toId: 1 });
+        await ensureIndex('messages', { listingId: 1 });
+        await ensureIndex('messages', { createdAt: -1 });
 
         // Favorites
-        await db.collection('favorites').createIndex({ userId: 1 });
-        await db.collection('favorites').createIndex({ listingId: 1 });
-        await db.collection('favorites').createIndex({ createdAt: -1 });
+        await ensureIndex('favorites', { userId: 1 });
+        await ensureIndex('favorites', { listingId: 1 });
+        await ensureIndex('favorites', { createdAt: -1 });
     }
 
     try {

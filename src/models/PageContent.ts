@@ -59,7 +59,6 @@ const pageContentSchema = new Schema<PageContentDocument>(
 );
 
 // Index for faster queries
-pageContentSchema.index({ slug: 1 });
 pageContentSchema.index({ sectionTitle: 1 });
 pageContentSchema.index({ isPublished: 1 });
 
