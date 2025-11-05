@@ -28,6 +28,7 @@ import configPublicRoutes from './routes/configPublicRoutes.js';
 import footerRoutes from './routes/footerRoutes.js';
 import pageRoutes from './routes/pageRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import migrateRoutes from './routes/migrateRoutes.js';
 
 // Initialize express app
 const app: Application = express();
@@ -97,6 +98,8 @@ app.use('/api/admin/config', configRoutes);
 app.use('/api/footer', footerRoutes);
 app.use('/api/pages', pageRoutes);
 app.use('/api/contact', contactRoutes);
+// Migration endpoint (dev-friendly). Mounted at /api/migrate
+app.use('/api/migrate', migrateRoutes);
 
 // 404 handler
 // Use app.use with no path so Express doesn't parse the route string with path-to-regexp

@@ -13,6 +13,7 @@
     "seed:categories": "ts-node scripts/seedCategories.ts",
     "force-india": "ts-node scripts/forceIndiaLocations.ts",
     "seed-weighted": "ts-node scripts/seedListingsWeighted.ts",
+    "migrate:seed": "ts-node scripts/migrateAndSeed.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
