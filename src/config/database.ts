@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { MongoClient, ServerApiVersion } from 'mongodb';
-import { config } from './env';
+import { config } from './env.js';
 
 export const connectDatabase = async (): Promise<void> => {
   // try {
