@@ -17,8 +17,8 @@ import {
   updatePaymentPlan,
   deletePaymentPlan,
   seedDemoData,
-} from '../controllers/adminController';
-import { authenticate, authorize } from '../middleware/auth';
+} from '../controllers/adminController.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = Router();
 

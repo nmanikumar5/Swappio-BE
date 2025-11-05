@@ -7,8 +7,8 @@ import {
     deleteConfig,
     getConfigsByCategory,
     seedDefaultConfigs,
-} from '../controllers/configController';
-import { authenticate, authorize } from '../middleware/auth';
+} from '../controllers/configController.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = Router();
 

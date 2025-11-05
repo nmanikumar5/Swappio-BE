@@ -5,8 +5,8 @@ import {
     getPaymentHistory,
     getAllPayments,
     refundPayment,
-} from '../controllers/paymentController';
-import { authenticate, authorize } from '../middleware/auth';
+} from '../controllers/paymentController.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = Router();
 

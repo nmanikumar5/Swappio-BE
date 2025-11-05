@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import FooterConfig from "../models/FooterConfig";
-import { asyncHandler } from "../utils/asyncHandler";
-import { sendSuccess } from "../utils/response";
-import { NotFoundError, BadRequestError } from "../utils/errors";
-import { sanitizeString } from "../utils/sanitize";
+import FooterConfig from "../models/FooterConfig.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { sendSuccess } from "../utils/response.js";
+import { NotFoundError, BadRequestError } from "../utils/errors.js";
+import { sanitizeString } from "../utils/sanitize.js";
 
 // @desc    Get footer configuration (Public)
 // @route   GET /api/footer/config

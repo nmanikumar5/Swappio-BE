@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import fetch from 'node-fetch';
 import NodeCache from 'node-cache';
-import { config } from '../config/env';
+import { config } from '../config/env.js';
 
 const cache = new NodeCache({ stdTTL: 30 });
 

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { config } from '../config/env';
+import { config } from '../config/env.js';
 import crypto from 'crypto';
 
 function randomBase64(size = 48) {

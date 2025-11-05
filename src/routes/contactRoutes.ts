@@ -7,8 +7,8 @@ import {
     respondToContact,
     deleteContact,
     getContactStats,
-} from '../controllers/contactController';
-import { authenticate, authorize } from '../middleware/auth';
+} from '../controllers/contactController.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = Router();
 

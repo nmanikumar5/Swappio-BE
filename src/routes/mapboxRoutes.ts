@@ -1,7 +1,7 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { config } from '../config/env';
-import { mapboxAutocomplete } from '../controllers/mapboxController';
+import { config } from '../config/env.js';
+import { mapboxAutocomplete } from '../controllers/mapboxController.js';
 
 const router = express.Router();
 

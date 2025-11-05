@@ -9,8 +9,8 @@ import {
     publishPage,
     deletePage,
     getPageStats,
-} from "../controllers/pageController";
-import { authenticate, authorize } from "../middleware/auth";
+} from "../controllers/pageController.js";
+import { authenticate, authorize } from "../middleware/auth.js";
 
 const router = Router();
 

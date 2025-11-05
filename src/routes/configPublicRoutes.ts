@@ -1,5 +1,5 @@
 import express from 'express';
-import { getPublicConfigs } from '../controllers/configController';
+import { getPublicConfigs } from '../controllers/configController.js';
 
 const router = express.Router();
 

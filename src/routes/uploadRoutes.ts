@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { uploadImage, uploadImages } from '../controllers/uploadController';
-import { authenticate } from '../middleware/auth';
+import { uploadImage, uploadImages } from '../controllers/uploadController.js';
+import { authenticate } from '../middleware/auth.js';
 import multer from 'multer';
 
 // use memory storage so we can convert buffer to data URI and upload to Cloudinary

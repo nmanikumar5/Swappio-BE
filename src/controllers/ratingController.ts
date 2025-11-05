@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import Rating from '../models/Rating';
-import User from '../models/User';
-import Listing from '../models/Listing';
-import { asyncHandler } from '../utils/asyncHandler';
-import { AppError, UnauthorizedError, NotFoundError, ValidationError, ForbiddenError } from '../utils/errors';
-import { sendSuccess } from '../utils/response';
+import Rating from '../models/Rating.js';
+import User from '../models/User.js';
+import Listing from '../models/Listing.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { AppError, UnauthorizedError, NotFoundError, ValidationError, ForbiddenError } from '../utils/errors.js';
+import { sendSuccess } from '../utils/response.js';
 
 /**
  * @desc    Create a new rating

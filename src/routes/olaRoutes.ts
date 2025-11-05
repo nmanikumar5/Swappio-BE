@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
-import { olaAutocomplete } from '../controllers/olaController';
-import { config } from '../config/env';
+import { olaAutocomplete } from '../controllers/olaController.js';
+import { config } from '../config/env.js';
 
 const router = Router();
 

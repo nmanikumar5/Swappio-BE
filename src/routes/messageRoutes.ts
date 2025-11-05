@@ -4,8 +4,8 @@ import {
   getConversations,
   getMessages,
   getUnreadCount,
-} from '../controllers/messageController';
-import { authenticate } from '../middleware/auth';
+} from '../controllers/messageController.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
 

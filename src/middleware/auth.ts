@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { config } from '../config/env';
-import User, { IUser } from '../models/User';
-import { UnauthorizedError, ForbiddenError } from '../utils/errors';
-import { asyncHandler } from '../utils/asyncHandler';
+import { config } from '../config/env.js';
+import User, { IUser } from '../models/User.js';
+import { UnauthorizedError, ForbiddenError } from '../utils/errors.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
 // Extend Express Request to include user
 declare global {

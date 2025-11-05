@@ -6,8 +6,8 @@ import {
     updateRating,
     deleteRating,
     canRateUser,
-} from '../controllers/ratingController';
-import { authenticate } from '../middleware/auth';
+} from '../controllers/ratingController.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 

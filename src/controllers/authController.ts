@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import User from '../models/User';
-import { TokenService } from '../services/tokenService';
-import { TwilioService } from '../services/twilioService';
-import { asyncHandler } from '../utils/asyncHandler';
-import { sendSuccess } from '../utils/response';
-import { ValidationError, UnauthorizedError, NotFoundError } from '../utils/errors';
-import { sanitizeString } from '../utils/sanitize';
-import { encryptText, decryptText } from '../utils/crypto';
-import { config } from '../config/env';
-import { configService } from '../services/configService';
+import User from '../models/User.js';
+import { TokenService } from '../services/tokenService.js';
+import { TwilioService } from '../services/twilioService.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { sendSuccess } from '../utils/response.js';
+import { ValidationError, UnauthorizedError, NotFoundError } from '../utils/errors.js';
+import { sanitizeString } from '../utils/sanitize.js';
+import { encryptText, decryptText } from '../utils/crypto.js';
+import { config } from '../config/env.js';
+import { configService } from '../services/configService.js';
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 

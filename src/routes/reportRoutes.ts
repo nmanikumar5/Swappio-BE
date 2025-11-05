@@ -4,9 +4,9 @@ import {
   getReports,
   updateReport,
   createReportSchema,
-} from '../controllers/reportController';
-import { authenticate, authorize } from '../middleware/auth';
-import { validate } from '../middleware/validate';
+} from '../controllers/reportController.js';
+import { authenticate, authorize } from '../middleware/auth.js';
+import { validate } from '../middleware/validate.js';
 
 const router = Router();
 

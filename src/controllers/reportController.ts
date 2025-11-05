@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import Report from '../models/Report';
-import Listing from '../models/Listing';
-import { asyncHandler } from '../utils/asyncHandler';
-import { sendSuccess } from '../utils/response';
-import { ForbiddenError, NotFoundError } from '../utils/errors';
-import { sanitizeString } from '../utils/sanitize';
+import Report from '../models/Report.js';
+import Listing from '../models/Listing.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { sendSuccess } from '../utils/response.js';
+import { ForbiddenError, NotFoundError } from '../utils/errors.js';
+import { sanitizeString } from '../utils/sanitize.js';
 
 // Validation schemas
 export const createReportSchema = z.object({

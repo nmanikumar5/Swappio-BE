@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import Listing from '../models/Listing';
-import Favorite from '../models/Favorite';
+import Listing from '../models/Listing.js';
+import Favorite from '../models/Favorite.js';
 import mongoose from 'mongoose';
-import { asyncHandler } from '../utils/asyncHandler';
-import { sendSuccess } from '../utils/response';
-import { NotFoundError, ForbiddenError, ValidationError } from '../utils/errors';
-import { createSafeRegex, sanitizeString } from '../utils/sanitize';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { sendSuccess } from '../utils/response.js';
+import { NotFoundError, ForbiddenError, ValidationError } from '../utils/errors.js';
+import { createSafeRegex, sanitizeString } from '../utils/sanitize.js';
 
 // Validation schemas
 export const createListingSchema = z.object({
@@ -50,7 +50,7 @@ export const createListing = asyncHandler(async (req: Request, res: Response) =>
   // If it's a free ad (standard priority or no priority), increment the quota counter
   if (!isPaidAd) {
     // Fetch full user to update quota
-    const User = require('../models/User').default;
+    const User = require('../models/User.js').default;
     const fullUser = await User.findById(user._id);
 
     if (!fullUser) throw new ForbiddenError('User not found');

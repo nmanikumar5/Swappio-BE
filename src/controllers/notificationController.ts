@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import Notification from '../models/Notification';
-import { asyncHandler } from '../utils/asyncHandler';
-import { sendSuccess } from '../utils/response';
-import { ForbiddenError } from '../utils/errors';
+import Notification from '../models/Notification.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { sendSuccess } from '../utils/response.js';
+import { ForbiddenError } from '../utils/errors.js';
 
 export const getNotifications = asyncHandler(async (req: Request, res: Response) => {
     const user = req.user;

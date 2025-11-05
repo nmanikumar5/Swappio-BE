@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import AppConfig from '../models/AppConfig';
-import { asyncHandler } from '../utils/asyncHandler';
-import { sendSuccess, sendError } from '../utils/response';
+import AppConfig from '../models/AppConfig.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { sendSuccess, sendError } from '../utils/response.js';
 
 // @desc    Get public configurations (non-encrypted only)
 // @route   GET /api/config/public

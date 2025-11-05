@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import PageContent from "../models/PageContent";
-import { asyncHandler } from "../utils/asyncHandler";
-import { sendSuccess } from "../utils/response";
-import { NotFoundError, BadRequestError } from "../utils/errors";
-import { sanitizeString } from "../utils/sanitize";
+import PageContent from "../models/PageContent.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { sendSuccess } from "../utils/response.js";
+import { NotFoundError, BadRequestError } from "../utils/errors.js";
+import { sanitizeString } from "../utils/sanitize.js";
 
 // @desc    Get page content by slug (Public)
 // @route   GET /api/pages/:slug

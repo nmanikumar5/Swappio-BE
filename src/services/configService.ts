@@ -1,4 +1,4 @@
-import AppConfig from '../models/AppConfig';
+import AppConfig from '../models/AppConfig.js';
 
 /**
  * Configuration Service

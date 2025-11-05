@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import User from '../models/User';
-import Listing from '../models/Listing';
-import Report from '../models/Report';
-import Payment from '../models/Payment';
-import PricingConfig from '../models/PricingConfig';
-import PaymentPlan from '../models/PaymentPlan';
-import { asyncHandler } from '../utils/asyncHandler';
-import { sendSuccess } from '../utils/response';
-import { NotFoundError, BadRequestError } from '../utils/errors';
-import { createSafeRegex, sanitizeString } from '../utils/sanitize';
+import User from '../models/User.js';
+import Listing from '../models/Listing.js';
+import Report from '../models/Report.js';
+import Payment from '../models/Payment.js';
+import PricingConfig from '../models/PricingConfig.js';
+import PaymentPlan from '../models/PaymentPlan.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { sendSuccess } from '../utils/response.js';
+import { NotFoundError, BadRequestError } from '../utils/errors.js';
+import { createSafeRegex, sanitizeString } from '../utils/sanitize.js';
 
 // @desc    Get all users (Admin)
 // @route   GET /api/admin/users

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { CloudinaryService } from '../services/cloudinaryService';
-import { asyncHandler } from '../utils/asyncHandler';
-import { sendSuccess } from '../utils/response';
-import { ValidationError } from '../utils/errors';
+import { CloudinaryService } from '../services/cloudinaryService.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { sendSuccess } from '../utils/response.js';
+import { ValidationError } from '../utils/errors.js';
 
 // helper to convert buffer + mimetype to data URI accepted by Cloudinary
 function bufferToDataURI(mimetype: string, buffer: Buffer) {

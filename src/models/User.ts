@@ -1,8 +1,8 @@
 // Clean User model: persist only encPassword (reversible) and provide comparePassword
 import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { encryptText, decryptText } from '../utils/crypto';
-import { config } from '../config/env';
+import { encryptText, decryptText } from '../utils/crypto.js';
+import { config } from '../config/env.js';
 
 export interface IUser extends Document {
   _id: Types.ObjectId;

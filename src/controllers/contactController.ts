@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import Contact from '../models/Contact';
-import { asyncHandler } from '../utils/asyncHandler';
-import { sendSuccess } from '../utils/response';
-import { BadRequestError, NotFoundError } from '../utils/errors';
+import Contact from '../models/Contact.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { sendSuccess } from '../utils/response.js';
+import { BadRequestError, NotFoundError } from '../utils/errors.js';
 
 // @desc    Submit contact form
 // @route   POST /api/contact/submit

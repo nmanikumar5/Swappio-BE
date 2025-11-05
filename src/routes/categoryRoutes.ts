@@ -6,8 +6,8 @@ import {
     updateCategory,
     deleteCategory,
     getCategoryTree,
-} from '../controllers/categoryController';
-import { authenticate, authorize } from '../middleware/auth';
+} from '../controllers/categoryController.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = Router();
 

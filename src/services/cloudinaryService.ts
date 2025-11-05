@@ -1,5 +1,5 @@
-import cloudinary from '../config/cloudinary';
-import { AppError } from '../utils/errors';
+import cloudinary from '../config/cloudinary.js';
+import { AppError } from '../utils/errors.js';
 
 export class CloudinaryService {
   static async uploadImage(file: string, folder: string = 'swappio'): Promise<string> {

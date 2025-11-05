@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import Category from '../models/Category';
-import { asyncHandler } from '../utils/asyncHandler';
-import { sendSuccess } from '../utils/response';
-import { NotFoundError, BadRequestError } from '../utils/errors';
+import Category from '../models/Category.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { sendSuccess } from '../utils/response.js';
+import { NotFoundError, BadRequestError } from '../utils/errors.js';
 
 // @desc    Get all categories (with optional filtering)
 // @route   GET /api/categories

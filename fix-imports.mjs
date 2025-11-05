@@ -7,9 +7,9 @@ const __dirname = path.dirname(__filename);
 
 const srcDir = path.join(__dirname, 'src');
 
-// Regex to match local imports without .js extension
-const importRegex = /from\s+['"](\.\/.+?)(?<!\.js)['"];/g;
-const requireRegex = /require\(['"](\.\/.+?)(?<!\.js)['"]\)/g;
+// Regex to match local imports without .js extension (handles both ./ and ../)
+const importRegex = /from\s+['"]((?:\.\/?)+[^'\"]*?)(?<!\.js)['"];?/g;
+const requireRegex = /require\(['"]((?:\.\/?)+[^'\"]*?)(?<!\.js)['"]\)/g;
 
 function fixImportsInFile(filePath) {
     try {
@@ -18,11 +18,14 @@ function fixImportsInFile(filePath) {
 
         // Fix ES6 imports
         content = content.replace(importRegex, (match, importPath) => {
-            return `from '${importPath}.js';`;
+            // Avoid touching package imports
+            if (!importPath.startsWith('.')) return match;
+            return match.replace(importPath, `${importPath}.js`);
         });
 
         // Fix CommonJS requires
         content = content.replace(requireRegex, (match, importPath) => {
+            if (!importPath.startsWith('.')) return match;
             return `require('${importPath}.js')`;
         });
 

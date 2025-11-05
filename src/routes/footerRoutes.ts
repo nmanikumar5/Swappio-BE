@@ -9,8 +9,8 @@ import {
     addLinkToSection,
     updateLinkInSection,
     deleteLinkFromSection,
-} from "../controllers/footerController";
-import { authenticate, authorize } from "../middleware/auth";
+} from "../controllers/footerController.js";
+import { authenticate, authorize } from "../middleware/auth.js";
 
 const router = Router();
 
