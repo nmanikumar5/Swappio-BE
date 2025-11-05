@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-const { MongoClient, ServerApiVersion } = require('mongodb');
+import { MongoClient, ServerApiVersion } from 'mongodb';
 import { config } from './env';
 
 export const connectDatabase = async (): Promise<void> => {
