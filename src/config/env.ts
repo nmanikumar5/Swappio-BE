@@ -1,9 +1,28 @@
 import dotenv from 'dotenv';
 
-// In development it's convenient to let the .env file override any existing
-// environment variables so local .env values are authoritative. This should
-// NOT be enabled in production unless you intentionally want .env to win.
-dotenv.config({ override: true });
+/*
+  Load .env only for non-production by default. In CI/CD or production (for
+  example Vercel) environment variables are provided by the platform and
+  loading a local `.env` file can accidentally bake secrets into a build or
+  runtime image. If you intentionally need to force `.env` to load in
+  production for debugging, set DOTENV_OVERRIDE=true in the environment.
+
+  Tip: when building Docker images or deploying to Vercel, avoid including a
+  `.env` file in the build context — see https://dotenvx.com/prebuild
+*/
+const isProduction = process.env.NODE_ENV === 'production';
+const forceDotenv = process.env.DOTENV_OVERRIDE === 'true';
+
+if (!isProduction || forceDotenv) {
+  // In development we want .env to override any existing envs so local
+  // values are authoritative. When forcing in production, also allow override
+  // (use cautiously).
+  dotenv.config({ override: true });
+} else {
+  // In production and not explicitly forced — do not load local .env
+  // to avoid accidentally shipping secrets.
+  // Still call dotenv.config() without override might be omitted on purpose.
+}
 
 export const config = {
   port: process.env.PORT || 5000,

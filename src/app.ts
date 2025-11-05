@@ -44,8 +44,33 @@ app.set('io', io);
 
 // Security middleware
 app.use(helmet());
+
+// Flexible CORS handling:
+// - `CORS_ORIGIN` can be a single origin or a comma-separated list of origins.
+// - If the incoming request has no Origin (server-to-server or curl), allow it.
+// - If NODE_ENV !== 'production' and CORS_ORIGIN is '*', allow all origins.
+const rawCors = config.corsOrigin || '';
+const allowedOrigins = rawCors.split(',').map(s => s.trim()).filter(Boolean);
+
 app.use(cors({
-  origin: config.corsOrigin,
+  origin: (incomingOrigin, callback) => {
+    // Allow requests with no Origin (e.g. curl, server-side)
+    if (!incomingOrigin) return callback(null, true);
+
+    // If wildcard is explicitly present, allow in non-production only
+    if (allowedOrigins.includes('*')) {
+      if (config.nodeEnv !== 'production') return callback(null, true);
+      // In production, using '*' with credentials is unsafe — deny and log
+      console.warn('CORS: wildcard origin disallowed in production when credentials=true');
+      return callback(new Error('CORS not allowed'));
+    }
+
+    // Allow if incoming origin is in the allowed list
+    if (allowedOrigins.includes(incomingOrigin)) return callback(null, true);
+
+    // Not allowed
+    return callback(new Error('CORS not allowed'));
+  },
   credentials: true,
 }));
 
