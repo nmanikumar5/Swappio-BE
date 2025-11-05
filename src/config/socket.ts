@@ -1,7 +1,7 @@
 import { Server as HTTPServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import { config } from '../config/env';
+import { config } from '../config/env.js';
 import Message from '../models/Message';
 
 interface AuthenticatedSocket extends Socket {
